@@ -1,0 +1,499 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-hairline: var(--hairline);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+/*
+ * Two themes on one cinematic identity: Nigerian emerald and reel gold against
+ * either a bright federal daylight surface or a deep theatre black. Dark is the
+ * default (see ThemeProvider); `.dark` is applied to <html> by next-themes.
+ *
+ * Components never hardcode white/black — they use these tokens, so both themes
+ * stay in sync.
+ */
+
+:root {
+  /* ── Light ─────────────────────────────────────────────────────────────── */
+  --background: oklch(0.987 0.004 150);
+  --foreground: oklch(0.205 0.022 168);
+  --surface: oklch(0.962 0.009 160);
+  --surface-2: oklch(0.935 0.012 160);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.205 0.022 168);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.205 0.022 168);
+  --primary: oklch(0.523 0.126 158);
+  --primary-foreground: oklch(0.995 0 0);
+  --secondary: oklch(0.938 0.012 160);
+  --secondary-foreground: oklch(0.245 0.022 168);
+  --muted: oklch(0.951 0.009 160);
+  --muted-foreground: oklch(0.468 0.021 165);
+  --accent: oklch(0.928 0.017 160);
+  --accent-foreground: oklch(0.225 0.022 168);
+  --gold: oklch(0.556 0.116 72);
+  --gold-foreground: oklch(0.995 0 0);
+  --destructive: oklch(0.543 0.204 27);
+  --border: oklch(0.205 0.022 168 / 13%);
+  --input: oklch(0.205 0.022 168 / 18%);
+  --ring: oklch(0.523 0.126 158 / 55%);
+
+  /* Texture + effects */
+  --hairline: oklch(0.205 0.022 168 / 0.14);
+  --grid-line: oklch(0.205 0.022 168 / 0.5);
+  --grain-opacity: 0.09;
+  --scrim: oklch(0.205 0.022 168 / 0.45);
+  --scrollbar-thumb: oklch(0.82 0.012 160);
+  --shadow-tint: oklch(0.205 0.022 168 / 0.10);
+  --rating-l: 0.46;
+  --rating-bg-a: 0.10;
+  --rating-border-a: 0.32;
+  --glow-primary: oklch(0.523 0.126 158 / 0.13);
+  --glow-primary-soft: oklch(0.523 0.126 158 / 0.07);
+  --glow-gold: oklch(0.556 0.116 72 / 0.10);
+  --gradient-1: oklch(0.26 0.03 168);
+  --gradient-2: oklch(0.45 0.12 158);
+  --gradient-3: oklch(0.56 0.12 72);
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* ── Dark (default) ────────────────────────────────────────────────────── */
+  --background: oklch(0.145 0.012 168);
+  --foreground: oklch(0.968 0.004 150);
+  --surface: oklch(0.183 0.014 168);
+  --surface-2: oklch(0.215 0.016 168);
+  --card: oklch(0.192 0.014 168);
+  --card-foreground: oklch(0.968 0.004 150);
+  --popover: oklch(0.205 0.015 168);
+  --popover-foreground: oklch(0.968 0.004 150);
+  --primary: oklch(0.706 0.148 158);
+  --primary-foreground: oklch(0.155 0.03 168);
+  --secondary: oklch(0.245 0.018 168);
+  --secondary-foreground: oklch(0.95 0.006 150);
+  --muted: oklch(0.235 0.014 168);
+  --muted-foreground: oklch(0.706 0.014 160);
+  --accent: oklch(0.26 0.026 168);
+  --accent-foreground: oklch(0.968 0.004 150);
+  --gold: oklch(0.822 0.137 85);
+  --gold-foreground: oklch(0.18 0.04 70);
+  --destructive: oklch(0.65 0.21 25);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.706 0.148 158 / 60%);
+
+  --hairline: oklch(1 0 0 / 0.14);
+  --grid-line: oklch(1 0 0 / 0.5);
+  --grain-opacity: 0.32;
+  --scrim: oklch(0 0 0 / 0.7);
+  --scrollbar-thumb: oklch(0.32 0.02 168);
+  --shadow-tint: oklch(0 0 0 / 0.45);
+  --rating-l: 0.84;
+  --rating-bg-a: 0.13;
+  --rating-border-a: 0.45;
+  --glow-primary: oklch(0.706 0.148 158 / 0.20);
+  --glow-primary-soft: oklch(0.706 0.148 158 / 0.10);
+  --glow-gold: oklch(0.822 0.137 85 / 0.14);
+  --gradient-1: oklch(0.99 0 0);
+  --gradient-2: oklch(0.93 0.03 158);
+  --gradient-3: oklch(0.822 0.137 85);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  ::-moz-selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--background); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 99px;
+    border: 3px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+}
+
+@layer utilities {
+  .container-x {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12;
+  }
+  .section-y {
+    @apply py-16 sm:py-24 lg:py-32;
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary;
+  }
+  .text-gradient {
+    background: linear-gradient(
+      103deg,
+      var(--gradient-1) 0%,
+      var(--gradient-2) 42%,
+      var(--gradient-3) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Frosted bar: the tint alone keeps text behind it unreadable, and the blur
+     softens whatever colour still shows through. */
+  .glass {
+    background: color-mix(in oklab, var(--background) 82%, transparent);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+  }
+  .hairline {
+    background-image: linear-gradient(90deg, transparent, var(--hairline), transparent);
+  }
+  .scrim {
+    background: var(--scrim);
+  }
+  /* Film grain overlay */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+  .spotlight {
+    background:
+      radial-gradient(60% 55% at 18% 0%, var(--glow-primary), transparent 70%),
+      radial-gradient(45% 50% at 88% 12%, var(--glow-gold), transparent 70%),
+      radial-gradient(80% 60% at 50% 110%, var(--glow-primary-soft), transparent 70%);
+  }
+  .grid-overlay {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  }
+  .card-surface {
+    @apply relative overflow-hidden rounded-2xl border border-border bg-card/70;
+  }
+  .sheen {
+    background-image: linear-gradient(
+      140deg,
+      color-mix(in oklab, var(--foreground) 5%, transparent) 0%,
+      transparent 42%
+    );
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* Scroll reveal — content is only hidden once the head script (`rv`) is running,
+   so nothing stays invisible if scripts are blocked. See components/site/reveal.tsx. */
+.reveal {
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.rv .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+/* Above-the-fold entrance: movement only, so the text is painted (and counted
+   as LCP) on the first frame. */
+@keyframes rise {
+  from { transform: translateY(18px) }
+}
+.rise { animation: rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Decorative oversized glyphs: drawn as generated content so they stay out of
+   the text layer (and out of contrast checks meant for readable copy). */
+.watermark-text::before { content: attr(data-text); }
+
+@-webkit-keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee { -webkit-animation: marquee-x 42s linear infinite; animation: marquee-x 42s linear infinite; }
+/* Let a reader stop the track to follow a single item. */
+.animate-marquee:hover, .animate-marquee:focus-within { -webkit-animation-play-state: paused; animation-play-state: paused; }
+
+/* Highlights carousel: the fill of the active chapter is the slide timer. */
+@keyframes hl-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.hl-progress { transform-origin: left; animation: hl-progress 7s linear forwards; }
+
+@-webkit-keyframes float-slow {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-14px) }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-14px) }
+}
+.animate-float { -webkit-animation: float-slow 9s ease-in-out infinite; animation: float-slow 9s ease-in-out infinite; }
+
+
+/* ---------------------------------------------------------- Hero backdrop */
+/* Decorative cinematic layer behind the hero. Clearly present but still
+   subordinate — it should never compete with the headline. */
+.hero-backdrop {
+  color: var(--primary);
+  mask-image: radial-gradient(135% 110% at 50% 28%, black 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(135% 110% at 50% 28%, black 55%, transparent 100%);
+}
+
+/* Logo watermark — sits beneath every vector layer */
+.hero-logo {
+  opacity: 0.06;
+}
+
+/* Sweeping projector beams */
+.hero-beam {
+  position: absolute;
+  /* Fixed top offset: a percentage would move (and count as layout shift)
+     whenever the hero height settles, e.g. after the web fonts swap in. */
+  top: -16rem;
+  height: calc(100% + 32rem);
+  width: 40%;
+  -webkit-filter: blur(24px);
+          filter: blur(24px);
+  opacity: 0;
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+.hero-beam-a {
+  left: 4%;
+  background: linear-gradient(
+    97deg,
+    transparent,
+    color-mix(in oklab, var(--primary) 26%, transparent) 45%,
+    transparent
+  );
+  -webkit-animation: hero-sweep 19s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+          animation: hero-sweep 19s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  /* Start mid-sweep: the beam is already lit on first paint instead of fading
+     in while the page loads. */
+  -webkit-animation-delay: -5s;
+          animation-delay: -5s;
+}
+.hero-beam-b {
+  right: 2%;
+  background: linear-gradient(
+    -97deg,
+    transparent,
+    color-mix(in oklab, var(--gold) 22%, transparent) 48%,
+    transparent
+  );
+  animation: hero-sweep 24s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse;
+  -webkit-animation-delay: -9s;
+          animation-delay: -9s;
+}
+@-webkit-keyframes hero-sweep {
+  0%   { opacity: 0.55; transform: translateX(-14%) rotate(-11deg) }
+  25%  { opacity: 1 }
+  50%  { opacity: 0.85; transform: translateX(16%) rotate(9deg) }
+  75%  { opacity: 1 }
+  100% { opacity: 0.55; transform: translateX(-14%) rotate(-11deg) }
+}
+@keyframes hero-sweep {
+  0%   { opacity: 0.55; transform: translateX(-14%) rotate(-11deg) }
+  25%  { opacity: 1 }
+  50%  { opacity: 0.85; transform: translateX(16%) rotate(9deg) }
+  75%  { opacity: 1 }
+  100% { opacity: 0.55; transform: translateX(-14%) rotate(-11deg) }
+}
+
+/* Line field — each path draws itself, holds, then releases */
+.hero-lines { opacity: 0.5 }
+.hero-draw {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  -webkit-animation: hero-draw 22s ease-in-out infinite;
+          animation: hero-draw 22s ease-in-out infinite;
+}
+@-webkit-keyframes hero-draw {
+  0%   { stroke-dashoffset: 1400;  opacity: 0 }
+  12%  { opacity: 1 }
+  55%  { stroke-dashoffset: 0;     opacity: 1 }
+  85%  { stroke-dashoffset: -1400; opacity: 0 }
+  100% { stroke-dashoffset: -1400; opacity: 0 }
+}
+@keyframes hero-draw {
+  0%   { stroke-dashoffset: 1400;  opacity: 0 }
+  12%  { opacity: 1 }
+  55%  { stroke-dashoffset: 0;     opacity: 1 }
+  85%  { stroke-dashoffset: -1400; opacity: 0 }
+  100% { stroke-dashoffset: -1400; opacity: 0 }
+}
+
+/* Lens / focus rings */
+.hero-rings { opacity: 0.55 }
+.hero-spin { -webkit-animation: hero-spin 60s linear infinite; animation: hero-spin 60s linear infinite; transform-origin: center; transform-box: fill-box }
+.hero-spin-rev { animation: hero-spin 44s linear infinite reverse; transform-origin: center; transform-box: fill-box }
+@-webkit-keyframes hero-spin { to { transform: rotate(360deg) } }
+@keyframes hero-spin { to { transform: rotate(360deg) } }
+
+/* 35mm perforation strips running down both margins */
+.hero-strip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 26px;
+  overflow: hidden;
+  opacity: 0.68;
+  border-inline: 1px solid var(--hairline);
+  mask-image: linear-gradient(180deg, transparent, black 22%, black 78%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, transparent, black 22%, black 78%, transparent);
+}
+.hero-strip-left { left: max(0.75rem, 2vw) }
+.hero-strip-right { right: max(0.75rem, 2vw) }
+.hero-strip-track {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 7px 0;
+  -webkit-animation: hero-film 14s linear infinite;
+          animation: hero-film 14s linear infinite;
+  will-change: transform;
+}
+.hero-strip-track-rev { -webkit-animation-duration: 20s; animation-duration: 20s; animation-direction: reverse }
+.hero-perf {
+  flex: none;
+  height: 16px;
+  margin-inline: 5px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in oklab, var(--primary) 62%, transparent);
+  background: color-mix(in oklab, var(--primary) 18%, transparent);
+}
+@-webkit-keyframes hero-film {
+  from { transform: translateY(0) }
+  to   { transform: translateY(-300px) } /* 10 cells x (16px + 14px gap) */
+}
+@keyframes hero-film {
+  from { transform: translateY(0) }
+  to   { transform: translateY(-300px) } /* 10 cells x (16px + 14px gap) */
+}
+
+/* Drifting movie glyphs */
+.hero-glyph {
+  position: absolute;
+  opacity: 0;
+  -webkit-animation-name: hero-drift;
+          animation-name: hero-drift;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+@-webkit-keyframes hero-drift {
+  0%   { opacity: 0;    transform: translate3d(0, 24px, 0) rotate(-8deg) scale(0.9) }
+  20%  { opacity: 0.85 }
+  50%  { opacity: 0.6;  transform: translate3d(14px, -20px, 0) rotate(7deg) scale(1.06) }
+  80%  { opacity: 0.8 }
+  100% { opacity: 0;    transform: translate3d(-6px, -46px, 0) rotate(-4deg) scale(0.92) }
+}
+@keyframes hero-drift {
+  0%   { opacity: 0;    transform: translate3d(0, 24px, 0) rotate(-8deg) scale(0.9) }
+  20%  { opacity: 0.85 }
+  50%  { opacity: 0.6;  transform: translate3d(14px, -20px, 0) rotate(7deg) scale(1.06) }
+  80%  { opacity: 0.8 }
+  100% { opacity: 0;    transform: translate3d(-6px, -46px, 0) rotate(-4deg) scale(0.92) }
+}
+
+/* Keeps the copy area clean under all of the above */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    58% 50% at 30% 42%,
+    color-mix(in oklab, var(--background) 82%, transparent) 0%,
+    transparent 74%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-backdrop .hero-beam { opacity: 0.7 }
+  .hero-backdrop .hero-draw { stroke-dashoffset: 0; opacity: 1 }
+  .hero-backdrop .hero-glyph { opacity: 0.5 }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    -webkit-animation-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+    -webkit-animation-iteration-count: 1 !important;
+            animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  /* The global snap above would leave the track parked mid-loop. */
+  .animate-marquee { -webkit-animation: none !important; animation: none !important; }
+}
