@@ -58,6 +58,18 @@ export function Header() {
 
           {/* Desktop nav */}
           <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+            <Link
+              href="/"
+              aria-current={pathname === "/" ? "page" : undefined}
+              className={cn(
+                "flex items-center rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                pathname === "/"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Home
+            </Link>
             {navGroups.map((group) => {
               const active = pathname.startsWith(group.href);
               const dismissed = dismissedGroup === group.label;
@@ -178,6 +190,19 @@ export function Header() {
           </div>
 
           <nav aria-label="Mobile" className="flex-1 overflow-y-auto overscroll-contain px-4 py-5">
+            <div className="border-b border-border">
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                aria-current={pathname === "/" ? "page" : undefined}
+                className={cn(
+                  "flex w-full items-center py-4 text-base font-semibold",
+                  pathname === "/" && "text-primary",
+                )}
+              >
+                Home
+              </Link>
+            </div>
             {navGroups.map((group) => {
               const expanded = openGroup === group.label;
               return (

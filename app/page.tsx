@@ -61,11 +61,14 @@ export default async function Home() {
   const centres = zones.reduce((n, z) => n + z.offices.length, 0);
 
   // Newest monthly batches first; the register page carries the complete list.
-  const [posts, recent, executiveDirector] = await Promise.all([
+  // No args, like /news: a deployment whose news.list validator lacks `limit`
+  // rejects the call outright, which would silently empty the ticker.
+  const [posts, news, executiveDirector] = await Promise.all([
     getApprovedMoviePosts(),
-    getNews({ limit: 12 }),
+    getNews(),
     getExecutiveDirector(),
   ]);
+  const recent = news.slice(0, 12);
   const headlines = recent.slice(0, 8);
   const highlights = buildHighlights(recent);
   const months = posts.slice(0, 3);
