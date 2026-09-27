@@ -8,6 +8,7 @@ import { CTA } from "@/components/site/kit";
 import { ShareBar } from "@/components/site/share-menu";
 import { getArticle, getNews, getNewsSlugs } from "@/lib/convex-server";
 import { jsonLd, ogImage, pageMetadata, siteName, siteUrl } from "@/lib/seo";
+import { cleanArticleHtml, isHtml, textParagraphs } from "@/lib/rich-text";
 
 export const revalidate = 300;
 // Articles added in Convex after a build are rendered on demand.
@@ -48,7 +49,7 @@ export default async function ArticlePage({ params }: Params) {
 
   const related = (await getNews({ limit: 4 })).filter((a) => a.slug !== slug).slice(0, 3);
   const date = formatDate(article.publishedAt);
-  const paragraphs = article.body.split(/\n{2,}/).filter((p) => p.trim().length > 0);
+  const bodyHtml = isHtml(article.body) ? cleanArticleHtml(article.body) : null;
 
   return (
     <>
@@ -153,11 +154,18 @@ export default async function ArticlePage({ params }: Params) {
               {article.excerpt}
             </p>
 
-            <div className="mt-10 space-y-6 text-base leading-relaxed text-muted-foreground">
-              {paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
+            {bodyHtml ? (
+              <div
+                className="mt-10 space-y-6 text-base leading-relaxed text-muted-foreground [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:pl-5 [&_blockquote]:italic [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:font-heading [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-foreground [&_img]:rounded-2xl [&_li]:mt-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:pl-6"
+                dangerouslySetInnerHTML={{ __html: bodyHtml }}
+              />
+            ) : (
+              <div className="mt-10 space-y-6 text-base leading-relaxed text-muted-foreground">
+                {textParagraphs(article.body).map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            )}
           </Reveal>
 
           <Reveal delay={140} className="mx-auto mt-14 max-w-3xl border-t border-border pt-10">
