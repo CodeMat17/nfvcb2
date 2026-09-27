@@ -15,7 +15,7 @@ import { HeroBackdrop } from "@/components/site/hero-backdrop";
 import { RatingSpotlight } from "@/components/site/rating-spotlight";
 import { NewsTicker } from "@/components/site/news-ticker";
 import { HighlightsCarousel } from "@/components/site/highlights-carousel";
-import { buildHighlights } from "@/lib/data/highlights";
+import { highlightSlides } from "@/lib/data/highlights";
 import { CTA, Eyebrow, Panel, SectionHeading, NumberedItem, Quote } from "@/components/site/kit";
 import {
   ratings,
@@ -71,7 +71,6 @@ export default async function Home() {
   const recent = news.slice(0, 12);
   // News is published rarely, so a short rotation keeps the strip current.
   const headlines = recent.slice(0, 3);
-  const highlights = buildHighlights(recent);
   const months = posts.slice(0, 3);
   const monthsTotal = months.reduce((n, m) => n + m.count, 0);
 
@@ -231,11 +230,11 @@ export default async function Home() {
       )}
 
       {/* ------------------------------------------------------ Highlights */}
-      {highlights.length > 0 && (
+      {highlightSlides.length > 0 && (
         <section className='pb-16 sm:pb-24'>
           <div className='container-x'>
             <Reveal>
-              <HighlightsCarousel slides={highlights} />
+              <HighlightsCarousel slides={highlightSlides} />
             </Reveal>
           </div>
         </section>

@@ -1,5 +1,3 @@
-import type { NewsArticle } from "@/lib/convex-server";
-
 type Action = { label: string; href: string };
 
 export type HighlightSlide = {
@@ -20,7 +18,7 @@ export type HighlightSlide = {
  * Standing messages in the homepage carousel. To swap an artwork backdrop for
  * a photo, drop the file in `public/highlights/` and set `image` on the slide.
  */
-const standing: HighlightSlide[] = [
+export const highlightSlides: HighlightSlide[] = [
   {
     id: "ratings",
     eyebrow: "Classification",
@@ -49,34 +47,3 @@ const standing: HighlightSlide[] = [
     secondary: { label: "Report an infringement", href: "/contact" },
   },
 ];
-
-function storySlide(a: NewsArticle): HighlightSlide {
-  return {
-    id: a._id,
-    eyebrow: a.category ?? "News",
-    title: a.title,
-    body: a.excerpt,
-    image: a.coverImageUrl,
-    primary: { label: "Read the story", href: `/news/${a.slug}` },
-    secondary: { label: "All news", href: "/news" },
-    date: a.publishedAt,
-    featured: a.featured,
-  };
-}
-
-/**
- * News stories, editor-featured first; only stories with a cover qualify, since
- * the slide is built on it. The standing messages restate the homepage's
- * "What the Board does" pillars, so they only fill in when there is no story.
- */
-export function buildHighlights(news: NewsArticle[]): HighlightSlide[] {
-  const withCover = news.filter((a) => a.coverImageUrl);
-  const stories = [
-    ...withCover.filter((a) => a.featured),
-    ...withCover.filter((a) => !a.featured),
-  ]
-    .slice(0, 3)
-    .map(storySlide);
-
-  return stories.length > 0 ? stories : standing;
-}
