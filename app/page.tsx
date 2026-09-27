@@ -69,7 +69,8 @@ export default async function Home() {
     getExecutiveDirector(),
   ]);
   const recent = news.slice(0, 12);
-  const headlines = recent.slice(0, 8);
+  // News is published rarely, so a short rotation keeps the strip current.
+  const headlines = recent.slice(0, 3);
   const highlights = buildHighlights(recent);
   const months = posts.slice(0, 3);
   const monthsTotal = months.reduce((n, m) => n + m.count, 0);
@@ -93,7 +94,11 @@ export default async function Home() {
         {/* letterbox bars */}
         <div className='pointer-events-none absolute inset-x-0 top-0 -z-10 h-20 bg-gradient-to-b from-background to-transparent' />
 
-        <div className='container-x relative pb-20 pt-24'>
+        {/* Latest headlines: under the nav on small screens, where the stacked
+            hero would push a bottom strip below the fold. */}
+        <NewsTicker articles={headlines} className='lg:hidden' />
+
+        <div className='container-x relative pb-20 pt-16 lg:pt-24'>
           <div className='grid items-start gap-12 lg:grid-cols-[1.25fr_0.75fr] lg:items-center lg:gap-14'>
             <div>
               <Reveal eager>
@@ -142,8 +147,8 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Latest headlines */}
-        <NewsTicker articles={headlines} />
+        {/* Latest headlines: the hero's lower third on large screens. */}
+        <NewsTicker articles={headlines} className='hidden lg:block' />
       </section>
 
       {/* ------------------------------------------------ Recent approvals */}
