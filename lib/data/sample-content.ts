@@ -11,7 +11,7 @@ import type {
   ApprovedMovieItem,
   ApprovedMoviePost,
   ApprovedMoviePostWithCount,
-  NewsArticle,
+  NewsArticleWithBody,
 } from "@/lib/convex-server";
 
 /** Small self-contained cover art so the image layout can be reviewed. */
@@ -22,7 +22,7 @@ function cover(from: string, to: string, label: string) {
 
 /* --------------------------------------------------------------------- News */
 
-export const sampleNews: NewsArticle[] = [
+export const sampleNews: NewsArticleWithBody[] = [
   {
     _id: "sample_news_1",
     _creationTime: Date.parse("2026-09-18T09:00:00Z"),

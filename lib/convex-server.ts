@@ -47,13 +47,13 @@ export async function fetchConvex<T>(
 
 /* ------------------------------------------------------------------- Types */
 
+/** Listing shape: `news.list` omits the body, which can be large. */
 export type NewsArticle = {
   _id: string;
   _creationTime: number;
   title: string;
   slug: string;
   excerpt: string;
-  body: string;
   coverImageUrl?: string;
   category?: string;
   author?: string;
@@ -61,6 +61,8 @@ export type NewsArticle = {
   publishedAt?: string;
   publish?: boolean;
 };
+
+export type NewsArticleWithBody = NewsArticle & { body: string };
 
 export type ApprovedMoviePost = {
   _id: string;
@@ -175,12 +177,12 @@ export async function getNewsCategories(): Promise<string[]> {
   return fetchConvex<string[]>("news.categories", {}, []);
 }
 
-export async function getArticle(slug: string): Promise<NewsArticle | null> {
+export async function getArticle(slug: string): Promise<NewsArticleWithBody | null> {
   if (!convexConfigured) {
     const { sampleNews } = await import("@/lib/data/sample-content");
     return sampleNews.find((n) => n.slug === slug) ?? null;
   }
-  return fetchConvex<NewsArticle | null>("news.getBySlug", { slug }, null);
+  return fetchConvex<NewsArticleWithBody | null>("news.getBySlug", { slug }, null);
 }
 
 export async function getNewsSlugs(): Promise<string[]> {
