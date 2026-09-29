@@ -8,6 +8,18 @@ import {
   ratingStyle,
 } from "@/lib/data/classification";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ApprovedMovieSummary,
+  sameLabel,
+  splitLanguages,
+} from "@/components/site/approved-movie-summary";
 
 function toneFor(rating: string) {
   const match = ratings.find(
@@ -28,19 +40,66 @@ function RatingChip({ rating }: { rating: string }) {
   );
 }
 
+function FilterSelect({
+  label,
+  allLabel,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  allLabel: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+}) {
+  const items = [
+    { value: "all", label: allLabel },
+    ...options.map((o) => ({ value: o, label: o })),
+  ];
+  return (
+    <Select items={items} value={value} onValueChange={(v) => onChange(v ?? "all")}>
+      <SelectTrigger
+        aria-label={label}
+        className="h-12! w-full rounded-full border-border bg-foreground/[0.04] px-5 sm:min-w-48"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {items.map((i) => (
+          <SelectItem key={i.value} value={i.value}>
+            {i.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function ApprovedMovieList({ items }: { items: ApprovedMovieItem[] }) {
   const [query, setQuery] = useState("");
   const [rating, setRating] = useState("all");
+  const [language, setLanguage] = useState("all");
 
   const usedRatings = useMemo(
     () => Array.from(new Set(items.map((i) => i.rating.trim()))).sort(),
     [items],
   );
 
+  const usedLanguages = useMemo(() => {
+    const seen = new Map<string, string>();
+    for (const l of items.flatMap((i) => splitLanguages(i.language))) {
+      if (!seen.has(l.toLowerCase())) seen.set(l.toLowerCase(), l);
+    }
+    return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
+  }, [items]);
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter((i) => {
-      if (rating !== "all" && i.rating.trim() !== rating) return false;
+      if (rating !== "all" && !sameLabel(i.rating, rating)) return false;
+      if (language !== "all" && !splitLanguages(i.language).some((l) => sameLabel(l, language)))
+        return false;
       if (!q) return true;
       return [
         i.title,
@@ -55,12 +114,27 @@ export function ApprovedMovieList({ items }: { items: ApprovedMovieItem[] }) {
         .toLowerCase()
         .includes(q);
     });
-  }, [items, query, rating]);
+  }, [items, query, rating, language]);
+
+  // Summary keys (e.g. canonical "PG") may differ in case from the raw values in the select.
+  const ratingValue =
+    rating === "all" ? "all" : (usedRatings.find((r) => sameLabel(r, rating)) ?? rating);
+  const languageValue =
+    language === "all" ? "all" : (usedLanguages.find((l) => sameLabel(l, language)) ?? language);
 
   return (
     <div>
+      {/* Summary */}
+      <ApprovedMovieSummary
+        items={items}
+        rating={rating}
+        language={language}
+        onRating={setRating}
+        onLanguage={setLanguage}
+      />
+
       {/* Controls */}
-      <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+      <div className="mt-10 grid gap-3 sm:grid-cols-[1fr_auto_auto]">
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -83,19 +157,21 @@ export function ApprovedMovieList({ items }: { items: ApprovedMovieItem[] }) {
           )}
         </div>
 
-        <select
-          value={rating}
-          onChange={(e) => setRating(e.target.value)}
-          aria-label="Filter by classification"
-          className="h-12 rounded-full border border-border bg-foreground/[0.04] px-5 text-sm outline-none transition-colors focus:border-primary/50"
-        >
-          <option value="all">All classifications</option>
-          {usedRatings.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
+        <FilterSelect
+          label="Filter by classification"
+          allLabel="All classifications"
+          value={ratingValue}
+          options={usedRatings}
+          onChange={setRating}
+        />
+
+        <FilterSelect
+          label="Filter by language"
+          allLabel="All languages"
+          value={languageValue}
+          options={usedLanguages}
+          onChange={setLanguage}
+        />
       </div>
 
       <p className="mt-5 text-sm text-muted-foreground">
@@ -107,7 +183,7 @@ export function ApprovedMovieList({ items }: { items: ApprovedMovieItem[] }) {
         <div className="mt-12 rounded-2xl border border-dashed border-border p-14 text-center">
           <p className="font-heading text-lg font-semibold">No matching titles</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Try a different title, producer or classification.
+            Try a different title, producer, classification or language.
           </p>
         </div>
       ) : (
