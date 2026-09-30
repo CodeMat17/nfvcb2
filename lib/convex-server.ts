@@ -277,3 +277,28 @@ export async function getExecutiveDirector(): Promise<ExecutiveDirector> {
     (await fetchConvex<ExecutiveDirector | null>("executiveDirector.get", {}, null)) ?? fallback
   );
 }
+
+/** The Board's recommended film, joined with its approved-register details. */
+export type NfvcbPick = {
+  month: string;
+  /** Slug of the monthly register post the film belongs to. */
+  slug: string;
+  posterUrl: string | null;
+  note: string | null;
+  trailerUrl: string | null;
+  title: string;
+  rating: string;
+  duration: string;
+  language: string;
+  director: string;
+  producer: string;
+  majorCast: string;
+  productionCompany: string;
+  consumerAdvice: string;
+};
+
+/** The published pick from the most recent batch, or null (section hides). */
+export async function getNfvcbPick(): Promise<NfvcbPick | null> {
+  if (!convexConfigured) return null;
+  return fetchConvex<NfvcbPick | null>("nfvcbPicks.current", {}, null);
+}

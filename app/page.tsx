@@ -14,6 +14,7 @@ import { Reveal } from "@/components/site/reveal";
 import { HeroBackdrop } from "@/components/site/hero-backdrop";
 import { RatingSpotlight } from "@/components/site/rating-spotlight";
 import { NewsTicker } from "@/components/site/news-ticker";
+import { Newsroom } from "@/components/site/newsroom";
 import { HighlightsCarousel } from "@/components/site/highlights-carousel";
 import { highlightSlides } from "@/lib/data/highlights";
 import { CTA, Eyebrow, Panel, SectionHeading, NumberedItem, Quote } from "@/components/site/kit";
@@ -24,7 +25,13 @@ import {
 import { timeline } from "@/lib/data/board";
 import { submissionSteps, licenceCategories } from "@/lib/data/licensing";
 import { zones } from "@/lib/data/zones";
-import { getApprovedMoviePosts, getExecutiveDirector, getNews } from "@/lib/convex-server";
+import { NfvcbPick } from "@/components/site/nfvcb-pick";
+import {
+  getApprovedMoviePosts,
+  getExecutiveDirector,
+  getNews,
+  getNfvcbPick,
+} from "@/lib/convex-server";
 
 const pillars = [
   {
@@ -63,10 +70,11 @@ export default async function Home() {
   // Newest monthly batches first; the register page carries the complete list.
   // No args, like /news: a deployment whose news.list validator lacks `limit`
   // rejects the call outright, which would silently empty the ticker.
-  const [posts, news, executiveDirector] = await Promise.all([
+  const [posts, news, executiveDirector, pick] = await Promise.all([
     getApprovedMoviePosts(),
     getNews(),
     getExecutiveDirector(),
+    getNfvcbPick(),
   ]);
   const recent = news.slice(0, 12);
   // News is published rarely, so a short rotation keeps the strip current.
@@ -229,6 +237,9 @@ export default async function Home() {
         </section>
       )}
 
+      {/* ----------------------------------------------------- NFVCB Pick */}
+      {pick && <NfvcbPick pick={pick} />}
+
       {/* ------------------------------------------------------ Highlights */}
       {highlightSlides.length > 0 && (
         <section className='pb-16 sm:pb-24'>
@@ -273,6 +284,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ------------------------------------------------------ Newsroom */}
+      <Newsroom articles={recent} />
 
       {/* ------------------------------------------------------- Ratings */}
       <section className='relative isolate overflow-hidden border-y border-border bg-surface section-y'>
@@ -319,31 +333,44 @@ export default async function Home() {
       </section>
 
       {/* ------------------------------------------------------ Timeline */}
-      <section className='section-y'>
+      {/* Always-dark reel: each era is a frame on one strip of film, which
+          scrolls sideways on small screens. */}
+      <section className='dark theatre letterbox relative isolate overflow-hidden text-foreground section-y'>
         <div className='container-x'>
           <SectionHeading
             eyebrow='Three decades'
             title='From a nascent regulator to a world-class institution'
             lead='Over thirty years NFVCB has grown alongside the industry it regulates — meeting each new format, market and platform with a framework built for it.'
           />
+        </div>
 
-          <ol className='mt-14 grid gap-8 md:grid-cols-4'>
-            {timeline.map((t, i) => (
-              <Reveal as='li' key={t.year} delay={i * 110} className='relative'>
-                <div className='flex items-center gap-3'>
-                  <span className='size-3 rounded-full bg-primary shadow-[0_0_0_5px_oklch(0.706_0.148_158/0.15)]' />
-                  <span className='h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent' />
-                </div>
-                <p className='mt-6 font-heading text-3xl font-bold tabular-nums text-gold'>
-                  {t.year}
-                </p>
-                <h3 className='mt-3 text-base font-semibold'>{t.title}</h3>
-                <p className='mt-2 text-sm leading-relaxed text-muted-foreground'>
-                  {t.body}
-                </p>
-              </Reveal>
-            ))}
-          </ol>
+        <div className='mt-14 border-y border-border bg-black/30'>
+          <div className='sprockets' />
+          <div className='no-scrollbar snap-x snap-mandatory overflow-x-auto'>
+            <ol className='container-x flex gap-3 lg:grid lg:grid-cols-4'>
+              {timeline.map((t, i) => (
+                <Reveal
+                  as='li'
+                  key={t.year}
+                  delay={i * 110}
+                  className='w-[78%] shrink-0 snap-start sm:w-[22rem] lg:w-auto'>
+                  <div className='flex h-full flex-col rounded-md border border-border bg-foreground/[0.03] p-6 sm:p-7'>
+                    <p className='font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground'>
+                      Frame {String(i + 1).padStart(2, "0")}
+                    </p>
+                    <p className='mt-6 font-heading text-4xl font-bold tabular-nums text-gold'>
+                      {t.year}
+                    </p>
+                    <h3 className='mt-3 text-base font-semibold'>{t.title}</h3>
+                    <p className='mt-2 text-sm leading-relaxed text-muted-foreground'>
+                      {t.body}
+                    </p>
+                  </div>
+                </Reveal>
+              ))}
+            </ol>
+          </div>
+          <div className='sprockets' />
         </div>
       </section>
 

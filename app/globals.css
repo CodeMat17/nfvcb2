@@ -242,6 +242,27 @@
       transparent 42%
     );
   }
+  /* Always-dark "screening room" band. Pair with the `dark` class so the
+     colour tokens inside switch to the dark theme in either mode. */
+  .theatre {
+    background:
+      radial-gradient(60% 50% at 50% 0%, var(--glow-primary-soft), transparent 70%),
+      oklch(0.115 0.01 168);
+  }
+  /* Cinema letterbox: solid bars top and bottom. */
+  .letterbox {
+    border-block: clamp(10px, 1.6vw, 18px) solid oklch(0.06 0.004 168);
+  }
+  /* A row of faint sprocket dots, as on the edge of a film strip. */
+  .sprockets {
+    height: 18px;
+    background: radial-gradient(
+        circle,
+        color-mix(in oklab, var(--foreground) 24%, transparent) 2.5px,
+        transparent 3px
+      )
+      0 50% / 22px 18px repeat-x;
+  }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
