@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 /** Up to two initials from the capitalised words of a name ("Vice President of …" → "VP"). */
@@ -33,8 +34,13 @@ export function ProfilePhoto({
       )}
     >
       {imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={imageUrl} alt={name} className="absolute inset-0 size-full object-cover object-top" />
+        <Image
+          src={imageUrl}
+          alt={name}
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover object-top"
+        />
       ) : (
         <div className="grid size-full place-items-center bg-gradient-to-br from-primary/18 via-surface to-gold/12">
           <span className={cn("font-heading font-bold text-foreground/25", initialsClassName)}>

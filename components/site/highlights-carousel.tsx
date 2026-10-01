@@ -93,14 +93,13 @@ function Emblem({ kind, active }: { kind: "licence" | "enforcement"; active: boo
 function Backdrop({ slide, active }: { slide: HighlightSlide; active: boolean }) {
   if (slide.image) {
     return (
-      // Covers come from arbitrary Convex storage URLs, so a plain img avoids
-      // per-host next/image remote pattern configuration.
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={slide.image}
         alt=""
+        fill
+        sizes="100vw"
         className={cn(
-          "absolute inset-0 -z-10 size-full object-cover transition-transform duration-[9000ms] ease-out",
+          "-z-10 object-cover transition-transform duration-[9000ms] ease-out",
           active ? "scale-100" : "scale-110",
         )}
       />

@@ -42,7 +42,7 @@ export function NfvcbPick({ pick }: { pick: Pick }) {
       <div className='container-x'>
         <div className='grid items-center gap-12 md:grid-cols-[minmax(0,17rem)_1fr] lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20'>
           {/* Poster */}
-          <Reveal className='mx-auto w-full max-w-[17rem] md:max-w-none'>
+          <Reveal className='w-full'>
             <div className='relative'>
               <div
                 aria-hidden
@@ -54,7 +54,7 @@ export function NfvcbPick({ pick }: { pick: Pick }) {
                     src={pick.posterUrl}
                     alt={`${pick.title} poster`}
                     fill
-                    sizes='(min-width: 1024px) 22rem, 17rem'
+                    sizes='(min-width: 1024px) 22rem, (min-width: 768px) 17rem, 100vw'
                     className='object-cover'
                   />
                 ) : (

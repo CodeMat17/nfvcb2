@@ -125,12 +125,16 @@ export default async function ArticlePage({ params }: Params) {
         <div className="container-x">
           <Reveal eager delay={220}>
             {article.coverImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={article.coverImageUrl}
-                alt=""
-                className="aspect-[21/9] w-full rounded-3xl border border-border object-cover"
-              />
+              <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border">
+                <Image
+                  src={article.coverImageUrl}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(min-width: 1280px) 1280px, 100vw"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               // No cover supplied: fall back to the Board logo on a soft brand wash.
               <div className="grid aspect-[21/9] w-full place-items-center rounded-3xl border border-border bg-gradient-to-br from-primary/18 via-surface to-gold/12">

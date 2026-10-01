@@ -2,8 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // NFVCB Pick posters are hosted on Cloudinary.
-    remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
+    remotePatterns: [
+      // NFVCB Pick posters are hosted on Cloudinary.
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      // News covers and profile photos are served from Convex file storage.
+      { protocol: "https", hostname: "*.convex.cloud" },
+    ],
   },
 };
 

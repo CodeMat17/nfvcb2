@@ -25,19 +25,43 @@ function Meta({ article }: { article: NewsArticle }) {
   );
 }
 
-/** Cover photo, or a quiet logo plate when the story has none. */
-function Cover({ article, className }: { article: NewsArticle; className?: string }) {
+/**
+ * Cover photo, or a quiet logo plate when the story has none. With `natural`
+ * the photo keeps its own aspect ratio, so it is shown whole and uncropped.
+ */
+function Cover({
+  article,
+  className,
+  sizes = "100vw",
+  natural = false,
+}: {
+  article: NewsArticle;
+  className?: string;
+  sizes?: string;
+  natural?: boolean;
+}) {
   return (
-    <div className={cn("relative overflow-hidden bg-surface-2", className)}>
+    <div
+      className={cn(
+        "relative overflow-hidden bg-surface-2",
+        // A natural cover spans the column on mobile; from md up its frame shrinks to the photo.
+        natural && article.coverImageUrl && "w-full md:w-fit md:max-w-full",
+        className,
+      )}
+    >
       {article.coverImageUrl ? (
-        // Convex storage URL, so a plain img avoids next/image remote patterns.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={article.coverImageUrl}
           alt=""
-          loading="lazy"
-          decoding="async"
-          className="size-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+          {...(natural ? { width: 1600, height: 900 } : { fill: true })}
+          sizes={sizes}
+          className={cn(
+            // Natural covers keep their aspect ratio (height-capped from md up), so nothing is cropped.
+            natural
+              ? "block h-auto w-full md:max-h-80 md:w-auto md:max-w-full lg:max-h-104"
+              : "size-full object-cover",
+            "transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]",
+          )}
         />
       ) : (
         <div className="grid size-full place-items-center bg-gradient-to-br from-primary/10 via-transparent to-gold/10">
@@ -78,7 +102,12 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
           {/* Lead story */}
           <Reveal>
             <Link href={`/news/${lead.slug}`} className="group block">
-              <Cover article={lead} className="aspect-[16/10] rounded-xl lg:aspect-[16/9]" />
+              <Cover
+                article={lead}
+                className={cn("rounded-xl", !lead.coverImageUrl && "aspect-[16/10] lg:aspect-[16/9]")}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                natural
+              />
               <div className="mt-7">
                 <Meta article={lead} />
                 <h3 className="mt-4 max-w-2xl font-heading text-2xl font-bold leading-tight transition-colors duration-300 group-hover:text-primary sm:text-3xl lg:text-[2.1rem]">
@@ -121,7 +150,7 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
                         </div>
                       </div>
                       {a.coverImageUrl && (
-                        <Cover article={a} className="aspect-[4/3] w-24 shrink-0 rounded-md sm:w-28" />
+                        <Cover article={a} className="aspect-[4/3] w-24 shrink-0 rounded-md sm:w-28" sizes="112px" />
                       )}
                     </Link>
                   </Reveal>

@@ -33,18 +33,19 @@ function formatDate(value?: string) {
 function Cover({ article, tall = false }: { article: NewsArticle; tall?: boolean }) {
   if (article.coverImageUrl) {
     return (
-      // Cover images come from arbitrary Convex storage URLs, so a plain img
-      // avoids per-host next/image remote pattern configuration.
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={article.coverImageUrl}
-        alt=""
+      <div
         className={
-          tall
-            ? "h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-            : "aspect-[16/10] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          (tall ? "h-full min-h-64" : "aspect-[16/10]") + " relative w-full overflow-hidden"
         }
-      />
+      >
+        <Image
+          src={article.coverImageUrl}
+          alt=""
+          fill
+          sizes={tall ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
     );
   }
   return (

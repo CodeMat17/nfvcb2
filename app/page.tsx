@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Clapperboard,
@@ -548,11 +549,11 @@ export default async function Home() {
               cite={
                 <span className='flex items-center gap-4'>
                   {executiveDirector.imageUrl && (
-                    // Convex storage URL, so a plain img avoids next/image remote patterns.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={executiveDirector.imageUrl}
                       alt=''
+                      width={56}
+                      height={56}
                       className='size-14 shrink-0 rounded-full border border-border object-cover object-top'
                     />
                   )}
