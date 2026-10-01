@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { NfvcbPick as Pick } from "@/lib/convex-server";
-import { ratings } from "@/lib/data/classification";
+import { ratings, ratingStyle } from "@/lib/data/classification";
 import { CTA, Eyebrow } from "./kit";
 import { Reveal } from "./reveal";
 
@@ -25,13 +25,14 @@ export function NfvcbPick({ pick }: { pick: Pick }) {
           is rasterised once. */}
       {pick.posterUrl && (
         <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* Blurred to pure colour, so a tiny rendition is plenty. */}
+          <Image
             src={pick.posterUrl}
             alt=""
-            loading="lazy"
-            decoding="async"
-            className="size-full scale-125 object-cover opacity-25 blur-3xl"
+            fill
+            sizes="256px"
+            quality={40}
+            className="scale-125 object-cover opacity-25 blur-3xl"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[oklch(0.115_0.01_168)] via-[oklch(0.115_0.01_168/0.75)] to-[oklch(0.115_0.01_168/0.4)]" />
         </div>
@@ -45,14 +46,12 @@ export function NfvcbPick({ pick }: { pick: Pick }) {
               <div aria-hidden className="absolute -inset-6 -z-10 rounded-[2rem] bg-gold/15 blur-2xl" />
               <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-surface-2 shadow-[0_40px_80px_-24px_rgb(0_0_0/0.9)] ring-1 ring-white/10">
                 {pick.posterUrl ? (
-                  // Cloudinary URL, so a plain img avoids next/image remote patterns.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={pick.posterUrl}
                     alt={`${pick.title} poster`}
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover"
+                    fill
+                    sizes="(min-width: 1024px) 22rem, 17rem"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="grid size-full place-items-center">
@@ -73,20 +72,16 @@ export function NfvcbPick({ pick }: { pick: Pick }) {
             </Reveal>
 
             <Reveal delay={80} className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-muted-foreground">
-              {rating ? (
-                <span className="flex items-center gap-2.5">
-                  <Image
-                    src={rating.image}
-                    alt={`Rated ${rating.code}`}
-                    width={40}
-                    height={40}
-                    className="size-10 rounded-md object-cover ring-1 ring-white/15"
-                  />
-                  <span className="font-semibold text-foreground">{rating.label}</span>
+              <span className="flex items-center gap-2.5">
+                <span
+                  className="grid h-10 min-w-10 place-items-center rounded-lg border px-2.5 font-heading text-sm font-extrabold"
+                  style={ratingStyle(rating?.tone ?? "160")}
+                >
+                  <span className="sr-only">Rated </span>
+                  {rating?.code ?? pick.rating.trim()}
                 </span>
-              ) : (
-                <span className="font-semibold text-foreground">Rated {pick.rating}</span>
-              )}
+                {rating && <span className="font-semibold text-foreground">{rating.label}</span>}
+              </span>
               {facts.map((f) => (
                 <span key={f} className="flex items-center gap-5">
                   <span aria-hidden className="h-4 w-px bg-border" />

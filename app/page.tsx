@@ -242,7 +242,7 @@ export default async function Home() {
 
       {/* ------------------------------------------------------ Highlights */}
       {highlightSlides.length > 0 && (
-        <section className='pb-16 sm:pb-24'>
+        <section className='py-16 sm:py-24'>
           <div className='container-x'>
             <Reveal>
               <HighlightsCarousel slides={highlightSlides} />
