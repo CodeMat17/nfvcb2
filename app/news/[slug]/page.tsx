@@ -125,7 +125,7 @@ export default async function ArticlePage({ params }: Params) {
         <div className="container-x">
           <Reveal eager delay={220}>
             {article.coverImageUrl ? (
-              <div className="relative mx-auto aspect-[21/9] w-full overflow-hidden rounded-3xl border border-border sm:aspect-[16/9] sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+              <div className="relative mx-auto aspect-[5/4] w-full overflow-hidden rounded-3xl border border-border sm:aspect-[16/9] sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
                 <Image
                   src={article.coverImageUrl}
                   alt=""
@@ -137,7 +137,7 @@ export default async function ArticlePage({ params }: Params) {
               </div>
             ) : (
               // No cover supplied: fall back to the Board logo on a soft brand wash.
-              <div className="mx-auto grid aspect-[21/9] w-full place-items-center rounded-3xl border border-border bg-gradient-to-br from-primary/18 via-surface to-gold/12 sm:aspect-[16/9] sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+              <div className="mx-auto grid aspect-[5/4] w-full place-items-center rounded-3xl border border-border bg-gradient-to-br from-primary/18 via-surface to-gold/12 sm:aspect-[16/9] sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
                 <Image
                   src="/logo.webp"
                   alt=""
