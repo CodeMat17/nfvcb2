@@ -43,7 +43,7 @@ function Cover({ article, tall = false }: { article: NewsArticle; tall?: boolean
           alt=""
           fill
           sizes={tall ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
         />
       </div>
     );

@@ -132,7 +132,7 @@ export default async function ArticlePage({ params }: Params) {
                   fill
                   priority
                   sizes="(min-width: 1280px) 1280px, 100vw"
-                  className="object-cover"
+                  className="object-cover object-top"
                 />
               </div>
             ) : (

@@ -59,7 +59,7 @@ function Cover({
             // Natural covers keep their aspect ratio (height-capped from md up), so nothing is cropped.
             natural
               ? "block h-auto w-full md:max-h-80 md:w-auto md:max-w-full lg:max-h-104"
-              : "size-full object-cover",
+              : "size-full object-cover object-top",
             "transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]",
           )}
         />
