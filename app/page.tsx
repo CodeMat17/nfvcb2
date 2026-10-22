@@ -26,12 +26,15 @@ import {
 import { timeline } from "@/lib/data/board";
 import { submissionSteps, licenceCategories } from "@/lib/data/licensing";
 import { zones } from "@/lib/data/zones";
-import { NfvcbPick } from "@/components/site/nfvcb-pick";
+// NFVCB Pick is on hold pending management approval. To restore it, uncomment
+// the lines marked "NFVCB Pick" in this file and drop <IsItClassified />.
+// import { NfvcbPick } from "@/components/site/nfvcb-pick";
+import { IsItClassified } from "@/components/site/is-it-classified";
 import {
   getApprovedMoviePosts,
   getExecutiveDirector,
   getNews,
-  getNfvcbPick,
+  // getNfvcbPick, // NFVCB Pick
 } from "@/lib/convex-server";
 
 const pillars = [
@@ -71,11 +74,11 @@ export default async function Home() {
   // Newest monthly batches first; the register page carries the complete list.
   // No args, like /news: a deployment whose news.list validator lacks `limit`
   // rejects the call outright, which would silently empty the ticker.
-  const [posts, news, executiveDirector, pick] = await Promise.all([
+  const [posts, news, executiveDirector /* , pick */] = await Promise.all([
     getApprovedMoviePosts(),
     getNews(),
     getExecutiveDirector(),
-    getNfvcbPick(),
+    // getNfvcbPick(), // NFVCB Pick
   ]);
   const recent = news.slice(0, 12);
   // News is published rarely, so a short rotation keeps the strip current.
@@ -239,7 +242,8 @@ export default async function Home() {
       )}
 
       {/* ----------------------------------------------------- NFVCB Pick */}
-      {pick && <NfvcbPick pick={pick} />}
+      {/* {pick && <NfvcbPick pick={pick} />} */}
+      <IsItClassified />
 
       {/* ------------------------------------------------------ Highlights */}
       {highlightSlides.length > 0 && (
