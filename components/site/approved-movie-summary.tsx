@@ -31,6 +31,20 @@ export function splitLanguages(language: string): string[] {
   );
 }
 
+function titleCase(s: string) {
+  return s.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep, c) => sep + c.toUpperCase());
+}
+
+/**
+ * The single language bucket a film belongs to, so every film is counted exactly once:
+ * "IGBO (SUBTITLED)" → "Igbo", "Igbo / english" and "English, Igbo" → "English/Igbo".
+ */
+export function languageGroup(language: string): string {
+  const langs = Array.from(new Set(splitLanguages(language).map(titleCase)));
+  if (langs.length === 0) return "Unspecified";
+  return langs.sort((a, b) => a.localeCompare(b)).join("/");
+}
+
 export function sameLabel(a: string, b: string) {
   return a.trim().toLowerCase() === b.trim().toLowerCase();
 }
@@ -87,7 +101,7 @@ function SummaryPanel({
                 aria-pressed={isActive}
                 title={r.title}
                 className={cn(
-                  "grid w-full grid-cols-[5.5rem_1fr_2rem] items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
+                  "grid w-full grid-cols-[8rem_1fr_2rem] items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
                   empty ? "cursor-default opacity-45" : "hover:bg-foreground/[0.05]",
                   isActive && "bg-primary/10 ring-1 ring-primary/35",
                 )}
@@ -150,8 +164,10 @@ export function ApprovedMovieSummary({
     ).map((r) => ({ ...r, tone: "160" })),
   ];
 
-  const languageRows = tally(items.flatMap((i) => splitLanguages(i.language)));
-  const multilingual = items.filter((i) => splitLanguages(i.language).length > 1).length;
+  // Single languages first (English, Igbo, …), then combinations (English/Igbo, …).
+  const languageRows = tally(items.map((i) => languageGroup(i.language)))
+    .sort((a, b) => Number(a.label.includes("/")) - Number(b.label.includes("/")))
+    .map((r) => ({ ...r, title: r.label }));
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -166,11 +182,7 @@ export function ApprovedMovieSummary({
       <SummaryPanel
         icon={Languages}
         title="By language"
-        note={
-          multilingual > 0
-            ? `${multilingual} multilingual ${multilingual === 1 ? "title" : "titles"} counted per language`
-            : `${languageRows.length} ${languageRows.length === 1 ? "language" : "languages"}`
-        }
+        note={`${items.length} ${items.length === 1 ? "title" : "titles"}`}
         rows={languageRows}
         active={language}
         onSelect={onLanguage}

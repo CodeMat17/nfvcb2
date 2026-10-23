@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/select";
 import {
   ApprovedMovieSummary,
+  languageGroup,
   sameLabel,
-  splitLanguages,
 } from "@/components/site/approved-movie-summary";
 
 function toneFor(rating: string) {
@@ -86,20 +86,19 @@ export function ApprovedMovieList({ items }: { items: ApprovedMovieItem[] }) {
     [items],
   );
 
-  const usedLanguages = useMemo(() => {
-    const seen = new Map<string, string>();
-    for (const l of items.flatMap((i) => splitLanguages(i.language))) {
-      if (!seen.has(l.toLowerCase())) seen.set(l.toLowerCase(), l);
-    }
-    return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
-  }, [items]);
+  const usedLanguages = useMemo(
+    () =>
+      Array.from(new Set(items.map((i) => languageGroup(i.language)))).sort((a, b) =>
+        a.localeCompare(b),
+      ),
+    [items],
+  );
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter((i) => {
       if (rating !== "all" && !sameLabel(i.rating, rating)) return false;
-      if (language !== "all" && !splitLanguages(i.language).some((l) => sameLabel(l, language)))
-        return false;
+      if (language !== "all" && !sameLabel(languageGroup(i.language), language)) return false;
       if (!q) return true;
       return [
         i.title,
