@@ -14,7 +14,9 @@ export const metadata: Metadata = pageMetadata({
 });
 
 // The foreword comes from the Executive Director's profile in Convex.
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 
 const icons: Record<string, LucideIcon> = { Users, Clapperboard, Landmark, Heart };
 

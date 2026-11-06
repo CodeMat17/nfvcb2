@@ -5,8 +5,9 @@ import { CTA, PageHero, Panel, Quote, SectionHeading } from "@/components/site/k
 import { getExecutiveDirector, type ProfileEntry as Entry } from "@/lib/convex-server";
 import { pageMetadata } from "@/lib/seo";
 
-// The profile is authored in Convex; revalidate so CMS edits appear without a redeploy.
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 
 export async function generateMetadata(): Promise<Metadata> {
   const ed = await getExecutiveDirector();

@@ -8,7 +8,9 @@ import { ApprovedMovieList } from "@/components/site/approved-movie-list";
 import { getApprovedMoviePost, getApprovedMovieSlugs } from "@/lib/convex-server";
 import { pageMetadata } from "@/lib/seo";
 
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 export const dynamicParams = true;
 
 type Params = { params: Promise<{ slug: string }> };

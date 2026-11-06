@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
-import { getApprovedMoviePosts, getNews } from "@/lib/convex-server";
+import { getApprovedMoviePosts, getEvents, getNews } from "@/lib/convex-server";
 import { siteUrl } from "@/lib/seo";
 
-// Picks up new articles and monthly registers published in Convex.
-export const revalidate = 3600;
+// Picks up new articles, registers and events when the CMS publishes them.
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -15,6 +17,7 @@ const pages: { path: string; priority: number; changeFrequency: Entry["changeFre
   { path: "/services", priority: 0.9, changeFrequency: "monthly" },
   { path: "/services/licensing", priority: 0.9, changeFrequency: "monthly" },
   { path: "/news", priority: 0.8, changeFrequency: "daily" },
+  { path: "/events", priority: 0.8, changeFrequency: "weekly" },
   { path: "/about", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/forms", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/payments", priority: 0.7, changeFrequency: "monthly" },
@@ -39,7 +42,11 @@ function toDate(value: string | number | undefined) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [news, posts] = await Promise.all([getNews(), getApprovedMoviePosts()]);
+  const [news, posts, events] = await Promise.all([
+    getNews(),
+    getApprovedMoviePosts(),
+    getEvents(),
+  ]);
   const now = new Date();
 
   return [
@@ -54,6 +61,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: toDate(p.date) ?? toDate(p._creationTime),
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    ...events.map((e) => ({
+      url: `${siteUrl}/events/${e.slug}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+      ...(e.bannerUrl && { images: [e.bannerUrl] }),
     })),
     ...news.map((a) => ({
       url: `${siteUrl}/news/${a.slug}`,

@@ -1,15 +1,22 @@
 import "server-only";
 import { ConvexHttpClient } from "convex/browser";
 import { anyApi } from "convex/server";
+import { unstable_cache } from "next/cache";
+import { SAFETY_REVALIDATE_SECONDS, type ContentTag } from "@/lib/revalidation";
 
 /**
  * Read-only server-side access to Convex.
  *
  * Pages call `fetchConvex` with a fallback value so the site still renders when
- * NEXT_PUBLIC_CONVEX_URL is not configured (local work, preview builds) or when
- * the deployment is briefly unreachable. Reads go through `anyApi`, which
- * addresses functions by path and therefore does not require the generated
- * `convex/_generated/api` module to be present at build time.
+ * NEXT_PUBLIC_CONVEX_URL is not configured (local work, preview builds). Reads
+ * go through `anyApi`, which addresses functions by path and therefore does not
+ * require the generated `convex/_generated/api` module to be present at build
+ * time.
+ *
+ * Caching: every read is cached and tagged with its Convex module name (`news`,
+ * `events`, …). Pages stay static until the CMS changes something; Convex then
+ * calls `/api/revalidate` with the affected tags and only the pages that used
+ * them are rebuilt. See `lib/revalidation.ts`.
  */
 
 const url = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -24,24 +31,39 @@ function getClient(): ConvexHttpClient | null {
   return client;
 }
 
-type QueryPath = `${string}.${string}`;
+type QueryPath = `${ContentTag}.${string}`;
+
+const isBuild = process.env.NEXT_PHASE === "phase-production-build";
 
 export async function fetchConvex<T>(
   path: QueryPath,
   args: Record<string, unknown>,
   fallback: T,
+  /** Extra tags, for queries that also read another module's tables. */
+  alsoDependsOn: ContentTag[] = [],
 ): Promise<T> {
   const c = getClient();
   if (!c) return fallback;
 
-  const [module, fn] = path.split(".") as [string, string];
+  const [module, fn] = path.split(".") as [ContentTag, string];
+
+  // Errors propagate out of the cached function, so a failed read is never
+  // stored; only successful results are cached.
+  const cached = unstable_cache(
+    () => c.query(anyApi[module][fn], args) as Promise<T | null>,
+    ["convex", path, JSON.stringify(args)],
+    { tags: [module, ...alsoDependsOn], revalidate: SAFETY_REVALIDATE_SECONDS },
+  );
 
   try {
-    const result = await c.query(anyApi[module][fn], args);
-    return (result ?? fallback) as T;
+    return (await cached()) ?? fallback;
   } catch (error) {
     console.error(`[convex] query ${path} failed:`, error);
-    return fallback;
+    // During `next build`, render with the fallback so a Convex blip doesn't
+    // fail the deploy. At runtime, fail the render instead: Next keeps serving
+    // the last good page rather than caching an empty one until the next edit.
+    if (isBuild) return fallback;
+    throw error;
   }
 }
 
@@ -300,5 +322,89 @@ export type NfvcbPick = {
 /** The published pick from the most recent batch, or null (section hides). */
 export async function getNfvcbPick(): Promise<NfvcbPick | null> {
   if (!convexConfigured) return null;
-  return fetchConvex<NfvcbPick | null>("nfvcbPicks.current", {}, null);
+  // The pick is joined with its register entry, so register edits matter too.
+  return fetchConvex<NfvcbPick | null>("nfvcbPicks.current", {}, null, ["approvedMovies"]);
+}
+
+/* ------------------------------------------------------------------ Events */
+
+export type EventSummary = {
+  _id: string;
+  title: string;
+  slug: string;
+  fullName: string | null;
+  edition: string | null;
+  theme: string | null;
+  description: string | null;
+  /** YYYY-MM-DD, Lagos dates. */
+  startDate: string;
+  endDate: string;
+  venue: string;
+  address: string | null;
+  registrationUrl: string | null;
+  bannerUrl: string | null;
+  bannerWidth: number | null;
+  bannerHeight: number | null;
+};
+
+export type EventPerson = {
+  _id: string;
+  name: string;
+  role: string;
+  title: string | null;
+  posterUrl: string | null;
+  posterWidth: number | null;
+  posterHeight: number | null;
+};
+
+export type EventSession = {
+  _id: string;
+  day: string;
+  startTime: string;
+  endTime: string | null;
+  title: string;
+  description: string | null;
+  speakers: string | null;
+};
+
+export type EventUpdate = {
+  _id: string;
+  title: string | null;
+  body: string;
+  imageUrl: string | null;
+  imageWidth: number | null;
+  imageHeight: number | null;
+  postedAt: number;
+};
+
+export type EventDetail = {
+  event: EventSummary;
+  people: EventPerson[];
+  sessions: EventSession[];
+  updates: EventUpdate[];
+};
+
+/** Published events, newest first. */
+export async function getEvents(): Promise<EventSummary[]> {
+  if (!convexConfigured) return [];
+  return fetchConvex<EventSummary[]>("events.list", {}, []);
+}
+
+export async function getEvent(slug: string): Promise<EventDetail | null> {
+  if (!convexConfigured) return null;
+  return fetchConvex<EventDetail | null>("events.getBySlug", { slug }, null);
+}
+
+export async function getEventSlugs(): Promise<string[]> {
+  if (!convexConfigured) return [];
+  return fetchConvex<string[]>("events.allSlugs", {}, []);
+}
+
+/** The soonest promoted event that hasn't ended yet, or null. */
+export async function getFeaturedEvent(): Promise<EventSummary | null> {
+  if (!convexConfigured) return null;
+  const { lagosToday } = await import("@/lib/events");
+  const today = lagosToday();
+  const rows = await fetchConvex<EventSummary[]>("events.featured", {}, []);
+  return rows.find((e) => e.endDate >= today) ?? null;
 }

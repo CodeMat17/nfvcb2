@@ -5,6 +5,8 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { ThemeProvider } from "@/components/site/theme-provider";
 import { revealScript } from "@/components/site/reveal";
+import { getFeaturedEvent } from "@/lib/convex-server";
+import { eventStatus } from "@/lib/events";
 import {
   jsonLd,
   ogImage,
@@ -91,9 +93,19 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+// The header promotes the current featured event. Convex revalidates the
+// `events` tag on edits and again when an event starts and ends, so pages stay
+// static otherwise; the daily timer is only a backstop.
+export const revalidate = 86400;
+
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const featured = await getFeaturedEvent();
+  const navEvent = featured
+    ? { title: featured.title, href: `/events/${featured.slug}`, live: eventStatus(featured) === "live" }
+    : null;
+
   return (
     <html
       lang="en"
@@ -117,7 +129,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <ThemeProvider>
-          <Header />
+          <Header event={navEvent} />
           <main id="main" className="flex-1">
             {children}
           </main>

@@ -10,7 +10,9 @@ import { getArticle, getNews, getNewsSlugs } from "@/lib/convex-server";
 import { jsonLd, ogImage, pageMetadata, siteName, siteUrl } from "@/lib/seo";
 import { cleanArticleHtml, isHtml, textParagraphs } from "@/lib/rich-text";
 
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 // Articles added in Convex after a build are rendered on demand.
 export const dynamicParams = true;
 

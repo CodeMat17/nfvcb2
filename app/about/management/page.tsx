@@ -14,8 +14,9 @@ export const metadata: Metadata = pageMetadata({
   path: "/about/management",
 });
 
-// Everything on this page is authored in Convex; revalidate so CMS edits appear without a redeploy.
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 
 export default async function ManagementPage() {
   const [leadership, executiveDirector, staff] = await Promise.all([

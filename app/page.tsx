@@ -30,9 +30,11 @@ import { zones } from "@/lib/data/zones";
 // the lines marked "NFVCB Pick" in this file and drop <IsItClassified />.
 // import { NfvcbPick } from "@/components/site/nfvcb-pick";
 import { IsItClassified } from "@/components/site/is-it-classified";
+import { EventBanner } from "@/components/site/event-banner";
 import {
   getApprovedMoviePosts,
   getExecutiveDirector,
+  getFeaturedEvent,
   getNews,
   // getNfvcbPick, // NFVCB Pick
 } from "@/lib/convex-server";
@@ -65,8 +67,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-/** The monthly register is live content, so the homepage revalidates with it. */
-export const revalidate = 300;
+// Static until the CMS changes it (on-demand revalidation, see lib/revalidation.ts);
+// the daily timer is only a backstop.
+export const revalidate = 86400;
 
 export default async function Home() {
   const centres = zones.reduce((n, z) => n + z.offices.length, 0);
@@ -74,10 +77,11 @@ export default async function Home() {
   // Newest monthly batches first; the register page carries the complete list.
   // No args, like /news: a deployment whose news.list validator lacks `limit`
   // rejects the call outright, which would silently empty the ticker.
-  const [posts, news, executiveDirector /* , pick */] = await Promise.all([
+  const [posts, news, executiveDirector, featuredEvent /* , pick */] = await Promise.all([
     getApprovedMoviePosts(),
     getNews(),
     getExecutiveDirector(),
+    getFeaturedEvent(),
     // getNfvcbPick(), // NFVCB Pick
   ]);
   const recent = news.slice(0, 12);
@@ -161,6 +165,8 @@ export default async function Home() {
         {/* Latest headlines: the hero's lower third on large screens. */}
         <NewsTicker articles={headlines} className='hidden lg:block' />
       </section>
+
+      {featuredEvent && <EventBanner event={featuredEvent} />}
 
       {/* ------------------------------------------------ Recent approvals */}
       {months.length > 0 && (

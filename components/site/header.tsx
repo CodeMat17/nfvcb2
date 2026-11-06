@@ -9,7 +9,19 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { ThemeToggle, ThemeSwitcher } from "./theme-toggle";
 
-export function Header() {
+export type NavEvent = { title: string; href: string; live: boolean };
+
+/** Pulsing dot for an event that is happening now. */
+function LiveDot() {
+  return (
+    <span className="relative flex size-2" aria-hidden>
+      <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-60" />
+      <span className="relative inline-flex size-2 rounded-full bg-destructive" />
+    </span>
+  );
+}
+
+export function Header({ event = null }: { event?: NavEvent | null }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -130,6 +142,22 @@ export function Header() {
                 </div>
               );
             })}
+            {event && (
+              <Link
+                href={event.href}
+                aria-current={pathname === event.href ? "page" : undefined}
+                className={cn(
+                  "ml-1 flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+                  pathname === event.href
+                    ? "border-gold/50 bg-gold/15 text-foreground"
+                    : "border-gold/30 bg-gold/10 text-gold hover:bg-gold/20 hover:text-foreground",
+                )}
+              >
+                {event.live && <LiveDot />}
+                <span className="max-w-[11rem] truncate">{event.title}</span>
+                {event.live && <span className="sr-only">(happening now)</span>}
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -203,6 +231,24 @@ export function Header() {
                 Home
               </Link>
             </div>
+            {event && (
+              <div className="border-b border-border py-3">
+                <Link
+                  href={event.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={pathname === event.href ? "page" : undefined}
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-base font-semibold"
+                >
+                  <span className="flex min-w-0 items-center gap-2.5">
+                    {event.live && <LiveDot />}
+                    <span className="truncate">{event.title}</span>
+                  </span>
+                  <span className="shrink-0 text-[11px] font-bold uppercase tracking-[0.14em] text-gold">
+                    {event.live ? "Live now" : "Event"}
+                  </span>
+                </Link>
+              </div>
+            )}
             {navGroups.map((group) => {
               const expanded = openGroup === group.label;
               return (
