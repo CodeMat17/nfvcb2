@@ -31,13 +31,29 @@ function EventCard({ event, lead }: { event: EventSummary; lead?: boolean }) {
     >
       <Link href={`/events/${event.slug}`} className="absolute inset-0 z-10" aria-label={event.title} />
       {event.bannerUrl && (
-        <div className={cn("relative bg-surface", lead ? "aspect-[16/10] lg:aspect-auto lg:min-h-80" : "aspect-[16/10]")}>
+        // Flyers come in any shape (often portrait), so show the whole image
+        // (object-contain) over a blurred, zoomed copy of itself that fills the frame —
+        // nothing gets cropped and cards keep a uniform size.
+        <div
+          className={cn(
+            "relative overflow-hidden bg-surface",
+            lead ? "aspect-[16/10] lg:aspect-auto lg:min-h-96" : "aspect-[16/10]",
+          )}
+        >
+          <Image
+            src={event.bannerUrl}
+            alt=""
+            aria-hidden
+            fill
+            sizes="64px"
+            className="scale-125 object-cover opacity-60 blur-2xl transition-transform duration-700 group-hover:scale-150"
+          />
           <Image
             src={event.bannerUrl}
             alt=""
             fill
             sizes={lead ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 640px) 50vw, 100vw"}
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-contain drop-shadow-xl"
           />
         </div>
       )}
