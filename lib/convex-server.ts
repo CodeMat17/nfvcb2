@@ -342,6 +342,8 @@ export type EventSummary = {
   venue: string;
   address: string | null;
   registrationUrl: string | null;
+  /** YouTube video ID parsed from the event's video link. */
+  youtubeId: string | null;
   bannerUrl: string | null;
   bannerWidth: number | null;
   bannerHeight: number | null;

@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       // News covers and profile photos are served from Convex file storage.
       { protocol: "https", hostname: "*.convex.cloud" },
+      // Event video thumbnails.
+      { protocol: "https", hostname: "i.ytimg.com" },
     ],
   },
 };
