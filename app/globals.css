@@ -144,6 +144,10 @@
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
     color-scheme: light;
+    /* Mobile browsers widen the layout viewport to fit any content that pokes
+       past the screen edge (overflow-x: hidden on body doesn't stop that), which
+       pushes right-anchored fixed UI like the menu drawer off-screen. */
+    overflow-x: clip;
   }
   html.dark {
     color-scheme: dark;
@@ -152,6 +156,7 @@
     @apply bg-background text-foreground antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    overflow-x: clip;
     transition: background-color 0.4s ease, color 0.4s ease;
   }
   h1, h2, h3, h4 {

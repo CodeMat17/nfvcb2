@@ -185,7 +185,9 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
         className={cn(
           // Sized to the *dynamic* viewport so the panel never runs under the
           // mobile browser's address/tool bars (100vh / inset-0 can).
-          "fixed inset-x-0 top-0 z-[60] h-dvh lg:hidden",
+          // w-screen (not right-0): pinned to the device width even if the
+          // page ever overflows sideways and the layout viewport grows.
+          "fixed left-0 top-0 z-[60] h-dvh w-screen lg:hidden",
           open ? "pointer-events-auto" : "pointer-events-none",
         )}
         // Closed: out of the tab order and the accessibility tree.
