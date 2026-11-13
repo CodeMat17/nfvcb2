@@ -183,7 +183,9 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
       {/* Mobile drawer */}
       <div
         className={cn(
-          "fixed inset-0 z-[60] lg:hidden",
+          // Sized to the *dynamic* viewport so the panel never runs under the
+          // mobile browser's address/tool bars (100vh / inset-0 can).
+          "fixed inset-x-0 top-0 z-[60] h-dvh lg:hidden",
           open ? "pointer-events-auto" : "pointer-events-none",
         )}
         // Closed: out of the tab order and the accessibility tree.
@@ -201,11 +203,11 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
         />
         <div
           className={cn(
-            "absolute inset-y-0 right-0 flex w-full max-w-sm flex-col border-l border-border bg-background shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "absolute inset-y-0 right-0 flex h-full w-full max-w-sm flex-col overflow-hidden border-l border-border bg-background shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
             open ? "translate-x-0" : "translate-x-full",
           )}
         >
-          <div className="flex h-16 items-center justify-between border-b border-border px-5">
+          <div className="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
             <Logo compact />
             <button
               type="button"
@@ -217,7 +219,10 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
             </button>
           </div>
 
-          <nav aria-label="Mobile" className="flex-1 overflow-y-auto overscroll-contain px-4 py-5">
+          {/* One scroll area for links *and* actions, so on short screens
+              nothing is pinned out of reach. */}
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+          <nav aria-label="Mobile" className="flex-1 px-4 py-5">
             <div className="border-b border-border">
               <Link
                 href="/"
@@ -297,7 +302,7 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
             })}
           </nav>
 
-          <div className="space-y-3 border-t border-border p-5">
+          <div className="space-y-3 border-t border-border p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <ThemeSwitcher className="w-full" />
             <Link
               href="/services/licensing"
@@ -311,6 +316,7 @@ export function Header({ event = null }: { event?: NavEvent | null }) {
             >
               <Phone className="size-4" /> Contact the Board
             </a>
+          </div>
           </div>
         </div>
       </div>
