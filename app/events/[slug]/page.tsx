@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock, MapPin, Mic2, Radio, Ticket, UserRound } from "lucide-react";
+import { Building2, CalendarDays, Clock, MapPin, Mic2, Radio, Ticket, UserRound } from "lucide-react";
 import { Reveal } from "@/components/site/reveal";
 import { CTA, Eyebrow, Panel, SectionHeading } from "@/components/site/kit";
 import { ShareBar } from "@/components/site/share-menu";
@@ -12,6 +12,7 @@ import {
   getEventSlugs,
   type EventPerson,
   type EventSession,
+  type EventSponsor,
   type EventUpdate,
 } from "@/lib/convex-server";
 import {
@@ -24,6 +25,7 @@ import {
   mapsUrl,
   roleOrder,
   rolePlural,
+  sponsorKindOrder,
 } from "@/lib/events";
 import { jsonLd, pageMetadata, siteName, siteUrl } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -184,6 +186,74 @@ function Guests({ people }: { people: EventPerson[] }) {
   );
 }
 
+function SponsorLogo({ sponsor }: { sponsor: EventSponsor }) {
+  const card = (
+    <figure className="card-surface flex h-full flex-col overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-primary/35 hover:shadow-2xl hover:shadow-[color:var(--shadow-tint)]">
+      {/* Logos are often dark-on-transparent, so they sit on a white plate in both themes. */}
+      <div className="relative aspect-[3/2] w-full bg-white">
+        {sponsor.logoUrl ? (
+          <Image
+            src={sponsor.logoUrl}
+            alt={sponsor.name}
+            fill
+            sizes="(min-width: 1024px) 20vw, (min-width: 640px) 30vw, 50vw"
+            className="object-contain p-4 sm:p-5"
+          />
+        ) : (
+          <div className="grid size-full place-items-center">
+            <Building2 className="size-10 text-neutral-400" />
+          </div>
+        )}
+      </div>
+      <figcaption className="flex flex-1 items-center justify-center border-t border-border px-3 py-3 text-center text-xs font-semibold leading-snug sm:text-sm">
+        {sponsor.name}
+      </figcaption>
+    </figure>
+  );
+  if (!sponsor.websiteUrl) return card;
+  return (
+    <a
+      href={sponsor.websiteUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${sponsor.name} (opens in a new tab)`}
+      className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    >
+      {card}
+    </a>
+  );
+}
+
+function Sponsors({ sponsors }: { sponsors: EventSponsor[] }) {
+  const known = new Set(sponsorKindOrder);
+  const kinds = [...sponsorKindOrder, ...new Set(sponsors.map((s) => s.kind).filter((k) => !known.has(k)))];
+  const groups = kinds
+    .map((kind) => ({ kind, items: sponsors.filter((s) => s.kind === kind) }))
+    .filter((g) => g.items.length > 0);
+
+  return (
+    <div className="mt-12 space-y-14">
+      {groups.map((g) => (
+        <div key={g.kind}>
+          <Reveal>
+            <h3 className="flex items-center gap-3 text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              <span className="h-px w-6 bg-gold/70" />
+              {rolePlural(g.kind, g.items.length)}
+            </h3>
+          </Reveal>
+          <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+            {g.items.map((s, i) => (
+              <Reveal key={s._id} delay={(i % 5) * 60} className="h-full">
+                <SponsorLogo sponsor={s} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Programme({ days, sessions }: { days: string[]; sessions: EventSession[] }) {
   return (
     <div className="mt-12 grid gap-6 lg:grid-cols-2">
@@ -275,6 +345,7 @@ export default async function EventPage({ params }: Params) {
   if (!data) notFound();
 
   const { event, people, sessions, updates } = data;
+  const sponsors = data.sponsors ?? [];
   const status = eventStatus(event);
   const when = formatDateRange(event.startDate, event.endDate);
   const days = eventDays(event.startDate, event.endDate);
@@ -294,6 +365,7 @@ export default async function EventPage({ params }: Params) {
     event.description && { id: "about", label: "About" },
     people.length > 0 && { id: "guests", label: "Speakers & guests" },
     sessions.length > 0 && { id: "programme", label: "Programme" },
+    sponsors.length > 0 && { id: "sponsors", label: "Sponsors & partners" },
     { id: "venue", label: "Venue" },
   ].filter(Boolean) as { id: string; label: string }[];
 
@@ -542,6 +614,19 @@ export default async function EventPage({ params }: Params) {
       )}
 
       {status === "upcoming" && updatesSection}
+
+      {sponsors.length > 0 && (
+        <section id="sponsors" className="relative isolate scroll-mt-24 border-y border-border bg-surface section-y">
+          <div className="container-x">
+            <SectionHeading
+              eyebrow="With thanks"
+              title="Sponsors & partners"
+              lead={`${event.title} is made possible with the support of these organisations.`}
+            />
+            <Sponsors sponsors={sponsors} />
+          </div>
+        </section>
+      )}
 
       {/* --------------------------------------------------------- Venue */}
       <section id="venue" className="section-y scroll-mt-24">

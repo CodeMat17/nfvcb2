@@ -90,6 +90,9 @@ export const roleOrder = [
   "Host",
 ];
 
+/** Display order of sponsor types; matches SPONSOR_KINDS in the CMS. */
+export const sponsorKindOrder = ["Sponsor", "Partner"];
+
 export function rolePlural(role: string, count: number): string {
   if (count === 1) return role;
   return role.endsWith("s") ? role : `${role}s`;

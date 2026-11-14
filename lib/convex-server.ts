@@ -34,6 +34,7 @@ function getClient(): ConvexHttpClient | null {
 type QueryPath = `${ContentTag}.${string}`;
 
 const isBuild = process.env.NEXT_PHASE === "phase-production-build";
+const isDev = process.env.NODE_ENV === "development";
 
 export async function fetchConvex<T>(
   path: QueryPath,
@@ -46,6 +47,12 @@ export async function fetchConvex<T>(
   if (!c) return fallback;
 
   const [module, fn] = path.split(".") as [ContentTag, string];
+
+  // Locally, read live: Convex's revalidation calls go to PUBLIC_SITE_URL, not
+  // localhost, so a cached read would never refresh after a CMS edit.
+  if (isDev) {
+    return ((await c.query(anyApi[module][fn], args)) as T | null) ?? fallback;
+  }
 
   // Errors propagate out of the cached function, so a failed read is never
   // stored; only successful results are cached.
@@ -359,6 +366,17 @@ export type EventPerson = {
   posterHeight: number | null;
 };
 
+export type EventSponsor = {
+  _id: string;
+  name: string;
+  /** "Sponsor" or "Partner" (SPONSOR_KINDS in the CMS). */
+  kind: string;
+  websiteUrl: string | null;
+  logoUrl: string | null;
+  logoWidth: number | null;
+  logoHeight: number | null;
+};
+
 export type EventSession = {
   _id: string;
   day: string;
@@ -382,6 +400,8 @@ export type EventUpdate = {
 export type EventDetail = {
   event: EventSummary;
   people: EventPerson[];
+  /** Missing on CMS deployments older than the sponsors feature. */
+  sponsors?: EventSponsor[];
   sessions: EventSession[];
   updates: EventUpdate[];
 };
