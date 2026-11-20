@@ -17,7 +17,7 @@ function Meta({ article }: { article: NewsArticle }) {
   const category = article.category?.replace(/-/g, " ");
   if (!date && !category) return null;
   return (
-    <p className="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
       {category && <span className="text-gold">{category}</span>}
       {category && date && <span aria-hidden className="h-px w-5 bg-border" />}
       {date && <span className="tabular-nums">{date}</span>}
@@ -56,7 +56,8 @@ function Cover({
           {...(natural ? { width: 1600, height: 900 } : { fill: true })}
           sizes={sizes}
           className={cn(
-            // Natural covers keep their aspect ratio (height-capped from md up), so nothing is cropped.
+            // Natural covers keep their aspect ratio, so nothing is cropped: full column width
+            // on mobile, height-capped from md up.
             natural
               ? "block h-auto w-full md:max-h-80 md:w-auto md:max-w-full lg:max-h-104"
               : "size-full object-cover object-top",
@@ -86,10 +87,10 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
   return (
     <section className="section-y">
       <div className="container-x">
-        <Reveal className="flex items-end justify-between gap-6 border-b border-border pb-6">
+        <Reveal className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4 border-b border-border pb-5 sm:pb-6">
           <div>
             <Eyebrow>Newsroom</Eyebrow>
-            <h2 className="mt-4 text-3xl font-bold leading-[1.1] sm:text-4xl lg:text-[2.75rem]">
+            <h2 className="mt-3 text-3xl sm:mt-4 font-bold leading-[1.1] sm:text-4xl lg:text-[2.75rem]">
               From the Board
             </h2>
           </div>
@@ -98,7 +99,12 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
           </Link>
         </Reveal>
 
-        <div className={cn("mt-10 grid gap-12", more.length > 0 && "lg:grid-cols-[1.45fr_1fr] lg:gap-16")}>
+        <div
+          className={cn(
+            "mt-8 grid grid-cols-1 gap-10 sm:mt-10 sm:gap-12 [&>*]:min-w-0",
+            more.length > 0 && "lg:grid-cols-[1.45fr_1fr] lg:gap-16",
+          )}
+        >
           {/* Lead story */}
           <Reveal>
             <Link href={`/news/${lead.slug}`} className="group block">
@@ -108,17 +114,17 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 natural
               />
-              <div className="mt-7">
+              <div className="mt-5 sm:mt-7">
                 <Meta article={lead} />
-                <h3 className="mt-4 max-w-2xl font-heading text-2xl font-bold leading-tight transition-colors duration-300 group-hover:text-primary sm:text-3xl lg:text-[2.1rem]">
+                <h3 className="mt-3 max-w-2xl font-heading text-[1.6rem] font-bold leading-tight [overflow-wrap:anywhere] sm:mt-4 transition-colors duration-300 group-hover:text-primary sm:text-3xl lg:text-[2.1rem]">
                   {lead.title}
                 </h3>
                 {lead.excerpt && (
-                  <p className="mt-4 line-clamp-3 max-w-xl text-base leading-relaxed text-muted-foreground">
+                  <p className="mt-3 line-clamp-3 max-w-xl text-[0.95rem] sm:mt-4 sm:text-base leading-relaxed text-muted-foreground">
                     {lead.excerpt}
                   </p>
                 )}
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold">
+                <span className="mt-5 inline-flex sm:mt-6 items-center gap-2 text-sm font-semibold">
                   Read the story
                   <span aria-hidden className="h-px w-6 bg-foreground/40 transition-all duration-500 group-hover:w-10 group-hover:bg-primary" />
                 </span>
@@ -137,12 +143,12 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
               <ol className="mt-4 divide-y divide-border border-y border-border">
                 {more.map((a, i) => (
                   <Reveal as="li" key={a._id} delay={(i + 1) * 90}>
-                    <Link href={`/news/${a.slug}`} className="group flex items-start gap-5 py-6">
+                    <Link href={`/news/${a.slug}`} className="group flex items-start gap-3.5 py-5 sm:gap-5 sm:py-6">
                       <span className="pt-1 font-mono text-xs tabular-nums text-muted-foreground">
                         {String(i + 2).padStart(2, "0")}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-heading text-lg font-bold leading-snug transition-colors duration-300 group-hover:text-primary">
+                        <h3 className="font-heading text-base font-bold leading-snug [overflow-wrap:anywhere] sm:text-lg transition-colors duration-300 group-hover:text-primary">
                           {a.title}
                         </h3>
                         <div className="mt-2.5">
@@ -150,7 +156,7 @@ export function Newsroom({ articles }: { articles: NewsArticle[] }) {
                         </div>
                       </div>
                       {a.coverImageUrl && (
-                        <Cover article={a} className="aspect-[4/3] w-24 shrink-0 rounded-md sm:w-28" sizes="112px" />
+                        <Cover article={a} className="aspect-[4/3] w-20 shrink-0 rounded-md sm:w-28" sizes="(min-width: 640px) 112px, 80px" />
                       )}
                     </Link>
                   </Reveal>
